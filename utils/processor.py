@@ -1,4 +1,4 @@
-from database.models import Movie, Genre, User
+from database.models import Movie, Genre
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 from utils.exceptions import *
@@ -38,24 +38,6 @@ class DatabaseServicer:
             raise ReadError
         finally:
             self.session.close()
-
-    @staticmethod
-    def get_user(session, username):
-        """
-        This method queries the "user" database
-        :param session: ORM session
-        :param username: decoded username string
-        :return: Boolean
-        """
-        try:
-            response = session.query(User).filter(
-                User.username == username and User.is_admin == 1).first()
-            if response:
-                return True
-        except NoResultFound:
-            return
-        finally:
-            session.close()
 
     def delete(self, key: int):
         """

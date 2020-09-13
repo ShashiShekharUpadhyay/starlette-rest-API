@@ -1,8 +1,11 @@
 import os
 import json
-from database.models import Movie, Genre, User, Base
+from database.models import Movie, Genre, Base
 from config import Cfg, constants
-from sqlalchemy.exc import IntegrityError
+import redis
+import pickle
+
+r = redis.Redis()
 
 
 def populate_movies(file_path, session):
@@ -27,33 +30,25 @@ def populate_movies(file_path, session):
             genre_list = fields.get('genre')
             for genre in genre_list:
                 name = genre.strip()
-                session.begin_nested()
-                try:
+                redis_obj = r.get(name)
+                if not redis_obj:
                     genre = Genre(name=name)
                     movie.genre.append(genre)
-                    session.add(movie)
                     session.commit()
-                except IntegrityError:
-                    session.rollback()
-                    genre = session.query(Genre).filter(Genre.name == name).first()
+                    r.set(name, pickle.dumps(genre))
+                else:
+                    genre = pickle.loads(redis_obj)
                     movie.genre.append(genre)
-                    session.add(movie)
                     session.commit()
+                session.commit()
         session.close()
 
 
-def add_user(session):
-    admins = ['shekhar', 'gaurang', 'sayali', 'ridha']
-    for admin in admins:
-        add = User(username=admin, is_admin=1)
-        session.add(add)
-    session.commit()
-
-
 if __name__ == "__main__":
+    r.flushdb()
     CONF = Cfg(os.environ.get(constants.STAGE))
     Base.metadata.create_all(CONF.engine)
     base_path = dir_path = os.path.dirname(os.path.realpath(__file__))
     file_path = f"{base_path}/database/imdb.json"
     populate_movies(file_path, CONF.DB())
-    add_user(CONF.DB())
+    r.flushdb()

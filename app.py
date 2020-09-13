@@ -28,15 +28,13 @@ class BasicAuthBackend(AuthenticationBackend):
         if "Authorization" not in request.headers:
             return
         auth = request.headers["Authorization"]
+        auth = auth.strip()
         try:
-            scheme, credentials = auth.split()
-            if scheme.lower() != 'token':
-                return
-            username = base64.b64decode(credentials).decode("ascii")
+            secret = base64.b64decode(auth).decode("utf-8")
         except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
             raise AuthenticationError('Invalid basic auth credentials')
-        if DatabaseServicer.get_user(CONF.DB(), username):
-            return AuthCredentials(["authenticated"]), SimpleUser(username)
+        if secret == os.environ.get('SECRET_KEY'):
+            return AuthCredentials(["authenticated"]), SimpleUser('admin')
 
 
 def on_auth_error(request, exc: Exception):
@@ -51,7 +49,6 @@ def search_movies(request):
     try:
         param = request.query_params.items()
         db = DatabaseServicer(CONF)
-        print(db.get(param))
         return JSONResponse(db.get(param))
     except CustomException as e:
         return JSONResponse(create_error_status(e))
@@ -70,7 +67,7 @@ async def add_movie(request):
             return JSONResponse({'message': 'Hurray!! Movie successfully added.'}, status_code=200)
         except CustomException as e:
             return JSONResponse(create_error_status(e))
-    return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
+    return JSONResponse({'error': 'This action requires authorization', 'status_code': 401})
 
 
 async def edit_movie(request):
@@ -79,7 +76,6 @@ async def edit_movie(request):
         This method expects a request body containing the record to be updated.
 
     """
-
     if request.user.is_authenticated:
         body = await request.json()
         try:
@@ -90,7 +86,7 @@ async def edit_movie(request):
             return JSONResponse({'message': 'Movie details successfully edited.', 'status_code': 200})
         except CustomException as e:
             return JSONResponse(create_error_status(e))
-    return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
+    return JSONResponse({'error': 'This action requires authorization', 'status_code': 401})
 
 
 def delete_movie(request):
@@ -110,7 +106,7 @@ def delete_movie(request):
                 return JSONResponse(create_error_status(e))
         else:
             return JSONResponse({'error': 'This action requires id as query parameter', 'status_code': 401})
-    return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
+    return JSONResponse({'error': 'This action requires authorization', 'status_code': 401})
 
 
 def homepage(request):

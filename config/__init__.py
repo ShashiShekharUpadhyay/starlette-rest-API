@@ -28,9 +28,8 @@ class Cfg(object, metaclass=Singleton):
         self.debug = self.Config('log', 'debug')
         db_url = self.Config('database', 'url')
         try:
-            self.engine = create_engine(db_url, echo=True)
+            self.engine = create_engine(db_url, pool_recycle=1800, echo=True)
             self.DB = sessionmaker(bind=self.engine)
         except Exception as e:
-            self.engine = create_engine(os.environ.get('CLEARDB_DATABASE_URL'), echo=True)
-            self.DB = sessionmaker(bind=self.engine)
             self.Logger.error(e)
+            # mysql: // b2e995682facf1: 38bb070c @ us - cdbr - east - 02.cleardb.com / heroku_d764af1917ab87c?reconnect = true

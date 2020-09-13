@@ -1,5 +1,5 @@
 from sqlalchemy import String, Column, Numeric, ForeignKey, MetaData, Table, Integer
-from sqlalchemy.dialects.mysql.types import INTEGER, TINYINT
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -23,7 +23,8 @@ class Movie(Base):
     imdb_score = Column(Numeric(2, 1), nullable=True)
     popularity = Column(Numeric(3, 1), nullable=True)
     director = Column(String(length=255), nullable=True)
-    genre = relationship('Genre', secondary=MovieGenre, backref=backref('movie_genres'), lazy='dynamic')
+    genre = relationship('Genre', secondary=MovieGenre, backref=backref('movie_genres', lazy='dynamic'))
+    genre_name = association_proxy('genre', 'name')
 
     @property
     def serialize(self):
@@ -61,10 +62,5 @@ class Genre(Base):
             return self.name
 
 
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(INTEGER(20), primary_key=True, autoincrement=True)
-    username = Column(String(length=255), nullable=True, unique=True)
-    is_admin = Column(TINYINT(display_width=1), default=0)
 
 
