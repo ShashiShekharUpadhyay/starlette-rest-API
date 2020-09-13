@@ -90,7 +90,7 @@ async def edit_movie(request):
             return JSONResponse({'message': 'Movie details successfully edited.', 'status_code': 200})
         except CustomException as e:
             return JSONResponse(create_error_status(e))
-    return JSONResponse({'error': 'This action requires authentication', 'status_code':401})
+    return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
 
 
 def delete_movie(request):
@@ -105,15 +105,17 @@ def delete_movie(request):
             try:
                 DatabaseServicer(CONF).delete(request.query_params.get('id'))
                 return JSONResponse({'message': 'Movie successfully deleted from the face of the earth.',
-                                    'status_code': 200})
+                                     'status_code': 200})
             except CustomException as e:
                 return JSONResponse(create_error_status(e))
         else:
             return JSONResponse({'error': 'This action requires id as query parameter', 'status_code': 401})
     return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
 
+
 def homepage(request):
-    return HTMLResponse('<h2 style="padding-left: 60px;"><span style="color: #333399;">Welcome To The World of Movies!</span></h2>')
+    return HTMLResponse(
+        '<h2 style="padding-left: 60px;"><span style="color: #333399;">Welcome To The World of Movies!</span></h2>')
 
 
 routes = [
