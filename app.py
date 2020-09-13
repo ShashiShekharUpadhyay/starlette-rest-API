@@ -1,7 +1,7 @@
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, HTMLResponse
 from starlette.authentication import (
     AuthenticationBackend, AuthenticationError, SimpleUser, UnauthenticatedUser,
     AuthCredentials
@@ -112,8 +112,12 @@ def delete_movie(request):
             return JSONResponse({'error': 'This action requires id as query parameter', 'status_code': 401})
     return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
 
+de homepage(request):
+    return HTMLResponse('<h2 style="padding-left: 60px;"><span style="color: #333399;">Welcome To The World of Movies!</span></h2>')
+
 
 routes = [
+    Route('/', enpoint=homepage, method=['GET']),
     Route('/api/movies', endpoint=search_movies, methods=['GET']),
     Route('/api/admin/movie/add', endpoint=add_movie, methods=['PUT']),
     Route('/api/admin/movie/remove', endpoint=delete_movie, methods=['DELETE']),
