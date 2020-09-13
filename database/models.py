@@ -20,8 +20,8 @@ class Movie(Base):
     __tablename__ = 'movie'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(length=255), nullable=True)
-    imdb_score = Column(Numeric(2, 1), nullable=True)
-    popularity = Column(Numeric(3, 1), nullable=True)
+    imdb_score = Column(Numeric(4, 2), nullable=True)
+    popularity = Column(Numeric(5, 2), nullable=True)
     director = Column(String(length=255), nullable=True)
     genre = relationship('Genre', secondary=MovieGenre, backref=backref('movie_genres', lazy='dynamic'))
     genre_name = association_proxy('genre', 'name')

@@ -32,4 +32,3 @@ class Cfg(object, metaclass=Singleton):
             self.DB = sessionmaker(bind=self.engine)
         except Exception as e:
             self.Logger.error(e)
-            # mysql: // b2e995682facf1: 38bb070c @ us - cdbr - east - 02.cleardb.com / heroku_d764af1917ab87c?reconnect = true

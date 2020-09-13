@@ -13,6 +13,9 @@ import os
 from config import Cfg, constants
 from utils.processor import DatabaseServicer
 from utils.exceptions import *
+import redis
+
+r = redis.from_url(os.environ['REDIS_URL'])
 
 CONF = Cfg(os.environ.get(constants.STAGE))
 
@@ -63,7 +66,7 @@ async def add_movie(request):
     if request.user.is_authenticated:
         body = await request.json()
         try:
-            DatabaseServicer(CONF).insert(body)
+            DatabaseServicer(CONF, r).insert(body)
             return JSONResponse({'message': 'Hurray!! Movie successfully added.'}, status_code=200)
         except CustomException as e:
             return JSONResponse(create_error_status(e))
@@ -79,7 +82,7 @@ async def edit_movie(request):
     if request.user.is_authenticated:
         body = await request.json()
         try:
-            db = DatabaseServicer(CONF)
+            db = DatabaseServicer(CONF, r)
             if not body.get('id'):
                 raise InvalidParameterError('id')
             db.update(body)

@@ -2,15 +2,17 @@ from database.models import Movie, Genre
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 from utils.exceptions import *
+import pickle
 
 
 class DatabaseServicer:
     """
     Base class for handling ORM session
     """
-    def __init__(self, CONF):
+    def __init__(self, CONF, redis=None):
         self.CONF = CONF
         self.session = CONF.DB()
+        self.redis = redis
 
     def get(self, param):
         """
@@ -69,17 +71,17 @@ class DatabaseServicer:
         :return:
         """
         for genre in genre_list:
-            self.session.begin_nested()
             name = genre.strip()
-            try:
+            redis_obj = self.redis.get(name)
+            if not redis_obj:
                 genre = Genre(name=name)
                 movie.genre.append(genre)
-                self.session.commit()
-            except IntegrityError:
-                self.session.rollback()
-                genre = self.session.query(Genre).filter(Genre.name == name).first()
+                self.session.flush()
+                self.redis.set(name, pickle.dumps(genre))
+            else:
+                genre = pickle.loads(redis_obj)
                 movie.genre.append(genre)
-                self.session.commit()
+                self.session.flush()
         return movie
 
     def insert(self, fields: dict):
@@ -116,8 +118,8 @@ class DatabaseServicer:
                 result = query.first()
                 old_genres = result.serialize['genre']
                 genre_list = param.get('genre')
-                genre_list = list(list(set(old_genres)-set(genre_list)) + list(set(genre_list)-set(old_genres)))
                 del param['genre']
+                genre_list = list(list(set(old_genres)-set(genre_list)) + list(set(genre_list)-set(old_genres)))
             self.add_genre(query.first(), genre_list)
             del param['id']
             query.update(values=param)

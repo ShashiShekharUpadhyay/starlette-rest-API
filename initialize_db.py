@@ -34,13 +34,13 @@ def populate_movies(file_path, session):
                 if not redis_obj:
                     genre = Genre(name=name)
                     movie.genre.append(genre)
-                    session.commit()
+                    session.flush()
                     r.set(name, pickle.dumps(genre))
                 else:
                     genre = pickle.loads(redis_obj)
                     movie.genre.append(genre)
-                    session.commit()
-                session.commit()
+                    session.flush()
+            session.commit()
         session.close()
 
 
