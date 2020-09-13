@@ -51,7 +51,6 @@ def add_user(session):
 
 
 if __name__ == "__main__":
-    os.environ['STAGE'] = "development"
     CONF = Cfg(os.environ.get(constants.STAGE))
     Base.metadata.create_all(CONF.engine)
     base_path = dir_path = os.path.dirname(os.path.realpath(__file__))
