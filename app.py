@@ -117,7 +117,7 @@ def homepage(request):
 
 
 routes = [
-    Route('/', enpoint=homepage, method=['GET']),
+    Route('/', endpoint=homepage, methods=['GET']),
     Route('/api/movies', endpoint=search_movies, methods=['GET']),
     Route('/api/admin/movie/add', endpoint=add_movie, methods=['PUT']),
     Route('/api/admin/movie/remove', endpoint=delete_movie, methods=['DELETE']),
