@@ -31,4 +31,6 @@ class Cfg(object, metaclass=Singleton):
             self.engine = create_engine(db_url, echo=True)
             self.DB = sessionmaker(bind=self.engine)
         except Exception as e:
+            self.engine = create_engine(os.environ.get('CLEARDB_DATABASE_URL'), echo=True)
+            self.DB = sessionmaker(bind=self.engine)
             self.Logger.error(e)
