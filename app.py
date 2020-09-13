@@ -112,7 +112,7 @@ def delete_movie(request):
             return JSONResponse({'error': 'This action requires id as query parameter', 'status_code': 401})
     return JSONResponse({'error': 'This action requires authentication', 'status_code': 401})
 
-de homepage(request):
+def homepage(request):
     return HTMLResponse('<h2 style="padding-left: 60px;"><span style="color: #333399;">Welcome To The World of Movies!</span></h2>')
 
 
@@ -130,6 +130,3 @@ middleware = [
 ]
 
 app = Starlette(debug=CONF.debug, routes=routes, middleware=middleware)
-
-# if __name__ == '__main__':
-#     app.run()
