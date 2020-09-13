@@ -28,7 +28,7 @@ class Cfg(object, metaclass=Singleton):
         self.debug = self.Config('log', 'debug')
         db_url = self.Config('database', 'url')
         try:
-            self.engine = create_engine(db_url, pool_recycle=1800, echo=True)
+            self.engine = create_engine(db_url, pool_recycle=1, echo=True)
             self.DB = sessionmaker(bind=self.engine)
         except Exception as e:
             self.Logger.error(e)
