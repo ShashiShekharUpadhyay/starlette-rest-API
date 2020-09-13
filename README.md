@@ -5,12 +5,12 @@ An API interface for:
  2. adding, editing, deleting movies. (requires admin access)
  
 
-# create a virtualenv 
--virtualenv .env
--source .env/bin/activate
--pip install -r requirements.txt
--python initialize_db.py
--uvicorn app:app
+# Project Setup
+ -virtualenv .env
+ -source .env/bin/activate
+ -pip install -r requirements.txt
+ -python initialize_db.py
+ -uvicorn app:app
 
 
  
