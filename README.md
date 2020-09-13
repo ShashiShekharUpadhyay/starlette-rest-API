@@ -6,11 +6,11 @@ An API interface for:
  
 
 # create a virtualenv 
-virtualenv .env
-source .env/bin/activate
-pip install -r requirements.txt
-python initialize_db.py
-uvicorn app:app
+-virtualenv .env
+-source .env/bin/activate
+-pip install -r requirements.txt
+-python initialize_db.py
+-uvicorn app:app
 
 
  
