@@ -51,4 +51,3 @@ if __name__ == "__main__":
     base_path = dir_path = os.path.dirname(os.path.realpath(__file__))
     file_path = f"{base_path}/database/imdb.json"
     populate_movies(file_path, CONF.DB())
-    r.flushdb()
