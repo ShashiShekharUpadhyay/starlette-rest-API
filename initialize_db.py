@@ -5,7 +5,7 @@ from config import Cfg, constants
 import redis
 import pickle
 
-r = redis.Redis()
+r = redis.from_url(os.environ['REDIS_URL'])
 
 
 def populate_movies(file_path, session):
